@@ -28,14 +28,16 @@
             --footer-text: #94a3b8;
             --shadow-sm: 0 4px 12px rgba(0, 0, 0, 0.04);
             --shadow-md: 0 16px 24px -12px rgba(79, 70, 229, 0.2);
+            --delete-btn-bg: #fee2e2;
+            --delete-btn-hover: #fecaca;
         }
 
         body.dark {
-            --bg-body: linear-gradient(145deg, #1e1b2e 0%, #2d1b3e 100%);
+            --bg-body: linear-gradient(145deg, #0f172a 0%, #1e1b2e 100%);
             --bg-container: #1e293b;
             --text-primary: #f1f5f9;
             --text-secondary: #cbd5e1;
-            --card-bg: #334155;
+            --card-bg: #ffffff;  /* fundo branco nos cards no modo escuro */
             --border-light: #475569;
             --tab-bg: #334155;
             --tab-active: linear-gradient(135deg, #818cf8, #c084fc);
@@ -45,6 +47,8 @@
             --footer-text: #94a3b8;
             --shadow-sm: 0 4px 12px rgba(0, 0, 0, 0.2);
             --shadow-md: 0 16px 24px -12px rgba(0, 0, 0, 0.5);
+            --delete-btn-bg: #dc2626;
+            --delete-btn-hover: #b91c1c;
         }
 
         body {
@@ -54,19 +58,37 @@
             padding: 16px;
             padding-top: 20px;
             transition: background 0.3s, color 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
+        /* Container com altura flexível para footer fixo */
         .container {
             max-width: 1280px;
+            width: 100%;
             margin: 0 auto;
             background: var(--bg-container);
             border-radius: 2rem;
             padding: 1.5rem;
             box-shadow: 0 25px 45px -12px rgba(0, 0, 0, 0.4), 0 1px 2px rgba(0, 0, 0, 0.05);
             transition: background 0.3s;
+            display: flex;
+            flex-direction: column;
+            height: calc(100vh - 40px);
+            max-height: calc(100vh - 40px);
+            overflow: hidden;
         }
 
-        /* cabeçalho com relógio e tema */
+        /* Área rolável apenas da lista */
+        .scrollable-area {
+            flex: 1;
+            overflow-y: auto;
+            padding-right: 4px;
+            margin-bottom: 12px;
+        }
+
+        /* Cabeçalho */
         .header {
             display: flex;
             justify-content: space-between;
@@ -76,6 +98,7 @@
             margin-bottom: 1.5rem;
             padding-bottom: 0.75rem;
             border-bottom: 2px solid var(--border-light);
+            flex-shrink: 0;
         }
 
         h1 {
@@ -102,7 +125,7 @@
             background: var(--tab-bg);
             border-radius: 60px;
             padding: 6px 16px;
-            font-size: 0.85rem;
+            font-size: 0.95rem;
             font-weight: 500;
             color: var(--text-primary);
             display: inline-flex;
@@ -113,7 +136,7 @@
         }
 
         .day-number {
-            font-size: 1.2rem;
+            font-size: 1.3rem;
             font-weight: 800;
             color: #4f46e5;
         }
@@ -123,26 +146,23 @@
 
         .clock {
             font-family: monospace;
-            font-weight: 600;
+            font-weight: 700;
             letter-spacing: 0.5px;
+            font-size: 1.05rem;
         }
 
-        /* toggle tema */
         .theme-toggle {
             background: var(--tab-bg);
             border: 1px solid var(--border-light);
             border-radius: 60px;
             padding: 6px 12px;
             cursor: pointer;
-            font-size: 1.1rem;
+            font-size: 1rem;
             display: flex;
             align-items: center;
             gap: 6px;
             transition: 0.2s;
-        }
-        .theme-toggle:hover {
-            transform: scale(1.02);
-            background: var(--border-light);
+            color: var(--text-primary);
         }
 
         .btn {
@@ -192,6 +212,7 @@
             grid-template-columns: repeat(3, 1fr);
             gap: 16px;
             margin-bottom: 28px;
+            flex-shrink: 0;
         }
 
         .stat {
@@ -233,6 +254,7 @@
             margin-bottom: 24px;
             flex-wrap: wrap;
             justify-content: center;
+            flex-shrink: 0;
         }
 
         .tab {
@@ -260,23 +282,10 @@
             display: flex;
             flex-direction: column;
             gap: 16px;
-            max-height: 55vh;
-            overflow-y: auto;
             padding: 4px 6px 8px 4px;
         }
 
-        .events-list::-webkit-scrollbar {
-            width: 5px;
-        }
-        .events-list::-webkit-scrollbar-track {
-            background: var(--border-light);
-            border-radius: 10px;
-        }
-        .events-list::-webkit-scrollbar-thumb {
-            background: #a5b4fc;
-            border-radius: 10px;
-        }
-
+        /* Cards com posição relativa para o botão X */
         .card {
             background: var(--card-bg);
             border-left: 5px solid #8b5cf6;
@@ -286,6 +295,23 @@
             transition: all 0.2s ease;
             cursor: pointer;
             color: var(--text-primary);
+            position: relative;
+        }
+
+        /* No modo escuro, o fundo já é branco via variável, mas forçamos */
+        body.dark .card {
+            background: #ffffff;
+            color: #0f172a;
+        }
+        body.dark .card .date {
+            background: #eef2ff;
+            color: #4f46e5;
+        }
+        body.dark .card p {
+            color: #334155;
+        }
+        body.dark .card h3 {
+            color: #0f172a;
         }
 
         .card:hover {
@@ -307,6 +333,7 @@
             align-items: center;
             flex-wrap: wrap;
             gap: 8px;
+            padding-right: 32px; /* Espaço para o botão X */
         }
 
         .badge-done {
@@ -317,7 +344,7 @@
             border-radius: 30px;
             font-weight: 500;
         }
-        body.dark .badge-done { color: #86efac; }
+        body.dark .badge-done { color: #065f46; background: #d1fae5; }
         .badge-expired {
             background: var(--badge-expired);
             color: #b91c1c;
@@ -325,7 +352,6 @@
             border-radius: 30px;
             font-size: 0.7rem;
         }
-        body.dark .badge-expired { color: #fca5a5; }
 
         .card p {
             color: var(--text-secondary);
@@ -337,16 +363,51 @@
             flex-wrap: wrap;
         }
 
+        /* DATA E HORÁRIO MAIORES */
         .card .date {
             color: #4f46e5;
-            font-weight: 600;
+            font-weight: 700;
             background: var(--border-light);
             display: inline-flex;
             align-items: center;
             gap: 4px;
-            padding: 4px 12px;
+            padding: 6px 14px;
             border-radius: 40px;
-            font-size: 0.75rem;
+            font-size: 0.9rem;
+        }
+
+        /* Botão X para deletar direto (visível apenas no modo escuro) */
+        .delete-event-btn {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            background: var(--delete-btn-bg);
+            color: #ffffff;
+            border: none;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            font-size: 1rem;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: 0.2s;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            z-index: 5;
+        }
+        .delete-event-btn:hover {
+            background: var(--delete-btn-hover);
+            transform: scale(1.05);
+        }
+        /* No modo claro, esconder o botão X */
+        body:not(.dark) .delete-event-btn {
+            display: none;
+        }
+        /* No modo escuro, mostrar */
+        body.dark .delete-event-btn {
+            display: flex;
         }
 
         .modal {
@@ -396,6 +457,12 @@
             color: var(--text-primary);
         }
 
+        /* Campo time digital mais aparente */
+        input[type="time"] {
+            font-family: monospace;
+            font-size: 1rem;
+        }
+
         .modal-actions {
             display: flex;
             gap: 10px;
@@ -419,18 +486,21 @@
             font-weight: 500;
         }
 
-        footer {
+        /* Rodapé fixo (não rola) */
+        .footer-fixed {
+            flex-shrink: 0;
             text-align: center;
-            margin-top: 28px;
+            margin-top: 8px;
             padding-top: 12px;
             border-top: 1px solid var(--border-light);
-            font-size: 0.75rem;
+            font-size: 0.8rem;
             color: var(--footer-text);
             display: flex;
             justify-content: center;
             align-items: center;
             flex-wrap: wrap;
             gap: 12px;
+            background: inherit;
         }
         .footer-link {
             display: inline-flex;
@@ -447,11 +517,12 @@
         }
 
         @media (max-width: 680px) {
-            .container { padding: 1rem; }
+            .container { padding: 1rem; height: calc(100vh - 32px); max-height: calc(100vh - 32px); }
             .stats { gap: 10px; }
             .modal-content { margin: 20% auto; padding: 1.2rem; }
             .modal-actions { flex-direction: column; }
             .right-header { width: 100%; justify-content: space-between; }
+            .delete-event-btn { width: 28px; height: 28px; font-size: 0.9rem; }
         }
     </style>
 </head>
@@ -497,14 +568,18 @@
             <div class="tab" data-filter="completed" onclick="applyFilter('completed', this)">✅ Concluídos</div>
         </div>
 
-        <div id="eventsList" class="events-list"></div>
+        <!-- Área rolável apenas com a lista -->
+        <div class="scrollable-area">
+            <div id="eventsList" class="events-list"></div>
+        </div>
 
-        <footer>
+        <!-- Rodapé fixo (não rola) -->
+        <div class="footer-fixed">
             <span>🧑‍💻 Desenvolvedor: Danie Negrini</span>
             <a href="https://wa.me/5514996922983" target="_blank" class="footer-link" rel="noopener noreferrer">
                 📱 (14) 99692-2983
             </a>
-        </footer>
+        </div>
     </div>
 
     <!-- Modal Edição/Criação -->
@@ -527,12 +602,10 @@
     </div>
 
     <script>
-        // ---------- Banco de dados ----------
         let events = [];
         let currentFilter = "all";
         let editingId = null;
 
-        // helpers
         function getTodayStr() {
             return new Date().toISOString().split("T")[0];
         }
@@ -548,7 +621,6 @@
             updateHeaderDateTime();
         }
 
-        // Data e hora dinâmica
         function updateHeaderDateTime() {
             const now = new Date();
             const day = now.getDate();
@@ -595,6 +667,17 @@
             return filtered;
         }
 
+        // Função para deletar evento diretamente (sem abrir modal)
+        function deleteEventDirect(eventId, eventElement) {
+            if(confirm("⚠️ Excluir este evento permanentemente?")) {
+                events = events.filter(e => e.id !== eventId);
+                saveEvents();
+                // Se o evento excluído era o que estava em edição, fechar modal
+                if(editingId === eventId) closeEditModal();
+                // Não precisa propagar clique
+            }
+        }
+
         function renderEvents() {
             const filtered = getFilteredEvents();
             const container = document.getElementById("eventsList");
@@ -615,17 +698,20 @@
                 let extraClass = "";
                 if(isDone) extraClass = "done";
                 return `
-                    <div class="card ${extraClass}" onclick="openEditModal(${event.id})">
-                        <h3>
-                            ${escapeHtml(event.title)} 
-                            ${isDone ? '<span class="badge-done">✔️ Concluído</span>' : ''}
-                            ${isExpired ? '<span class="badge-expired">⚠️ Atrasado</span>' : ''}
-                        </h3>
-                        <p class="date">
-                            📅 ${formatDate(event.date)} ${event.time ? `⏰ ${escapeHtml(event.time)}` : ''}
-                        </p>
-                        ${event.description ? `<p>📝 ${escapeHtml(event.description)}</p>` : ''}
-                        ${event.location ? `<p>📍 ${escapeHtml(event.location)}</p>` : ''}
+                    <div class="card ${extraClass}" data-event-id="${event.id}">
+                        <button class="delete-event-btn" onclick="event.stopPropagation(); deleteEventDirect(${event.id}, this.parentElement)">✕</button>
+                        <div onclick="openEditModal(${event.id})">
+                            <h3>
+                                ${escapeHtml(event.title)} 
+                                ${isDone ? '<span class="badge-done">✔️ Concluído</span>' : ''}
+                                ${isExpired ? '<span class="badge-expired">⚠️ Atrasado</span>' : ''}
+                            </h3>
+                            <p class="date">
+                                📅 ${formatDate(event.date)} ${event.time ? `⏰ ${escapeHtml(event.time)}` : ''}
+                            </p>
+                            ${event.description ? `<p>📝 ${escapeHtml(event.description)}</p>` : ''}
+                            ${event.location ? `<p>📍 ${escapeHtml(event.location)}</p>` : ''}
+                        </div>
                     </div>
                 `;
             }).join('');
@@ -644,7 +730,6 @@
             renderEvents();
         }
 
-        // Modal e CRUD
         function openAddModal() {
             editingId = null;
             document.getElementById("editTitle").value = "";
@@ -728,10 +813,9 @@
             }
         }
 
-        // Enviar evento via WhatsApp (abre com texto pré-formatado)
         function shareEventWhatsApp() {
             if(editingId === null) {
-                alert("Salve o evento antes de compartilhar, ou abra um evento existente.");
+                alert("Abra um evento existente para compartilhar ou salve antes.");
                 return;
             }
             const event = events.find(e => e.id === editingId);
@@ -745,8 +829,7 @@
             if(event.description) message += `*Descrição:* ${escapeWhatsApp(event.description)}%0A`;
             message += `🔔 Organize-se com o DN Anote Aí!`;
             
-            const url = `https://wa.me/?text=${message}`;
-            window.open(url, '_blank');
+            window.open(`https://wa.me/?text=${message}`, '_blank');
         }
 
         function escapeWhatsApp(str) {
@@ -772,7 +855,6 @@
             return div.innerHTML;
         }
 
-        // Tema escuro/claro persistente
         function initTheme() {
             const savedTheme = localStorage.getItem('dn_theme');
             if(savedTheme === 'dark') {
@@ -786,6 +868,8 @@
                 if(toggleSpan) toggleSpan.innerText = 'Escuro';
                 document.querySelector('#themeToggleBtn').innerHTML = '🌙 <span>Escuro</span>';
             }
+            // Força re-render para aplicar X nos cards
+            renderEvents();
         }
 
         function toggleTheme() {
@@ -798,9 +882,9 @@
                 localStorage.setItem('dn_theme', 'dark');
                 document.querySelector('#themeToggleBtn').innerHTML = '☀️ <span>Claro</span>';
             }
+            renderEvents(); // recria cards para mostrar/esconder X
         }
 
-        // Carregar dados iniciais
         function loadInitialData() {
             const stored = localStorage.getItem("events");
             if(stored) {
@@ -836,7 +920,6 @@
             if(event.target === modal) closeEditModal();
         };
 
-        // Relógio em tempo real
         setInterval(() => {
             updateHeaderDateTime();
             if(currentFilter === "today" || currentFilter === "upcoming") renderEvents();
